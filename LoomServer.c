@@ -9,10 +9,19 @@ int CreateTCPServerSocket(unsigned short ServerPort);
 
 int main(int argc, char *argv[]){
 
+int  sockid;
+
 
 
 
 
 	return 0;
 
+}
+
+
+int CreateTCPServerSocket(unsigned short ServerPort){
+
+
+return 1;
 }
