@@ -54,7 +54,11 @@ void HandelTCPClient(int clientSock){
 		perror("recv failed");
 	}
 
-		////do something-----------------
+	printf("received from client: ");
+	puts(rcvbuffer);	
+	printf("\n");
+	////do something-----------------
+
 
 	if(send(clientSock,"HelloWorld",10,0)<0){
 		perror("send failed");
@@ -62,7 +66,7 @@ void HandelTCPClient(int clientSock){
 	}
 
 
-		close(clientSock);
+	close(clientSock);
 }
 
 
@@ -71,7 +75,7 @@ int AcceptTCPConnection(int serverSock){
 
 	struct sockaddr_in clientAddr;/*Client address*/
 
-	int clientLength;/*Length of the client address data structure*/
+	unsigned int clientLength;/*Length of the client address data structure*/
 	clientLength=sizeof(clientAddr);
 
 	if((clientid = accept(serverSock, (struct sockaddr *) &clientAddr,&clientLength)) < 0){
@@ -196,7 +200,7 @@ int CreateTCPServerSocket(int portnum,char *argv[]){
 	printf("Soceket bond to port successfully\n");
 	}	
 	//End Method 2: --------------------------------------------------------------------- 
-	*/
+	 */
 
 	return sockid;
 }
