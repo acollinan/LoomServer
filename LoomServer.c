@@ -8,6 +8,7 @@
 #include <unistd.h> /* for close() */
 #include <sys/types.h> 
 #include <netdb.h> /* for struct addrinfo and getnameinfo  */
+#include <time.h>
 
 #define MAXPENDING 5 /*Maximum outstanding connection requests most systems max is 20 (use 5 to 10)*/
 #define RCVBUFSIZE 64 /*size of receive Buffer*/
@@ -19,6 +20,7 @@ int AcceptTCPConnection(int);
 void HandelTCPClient(int );
 
 int main(int argc, char *argv[]){
+
 	int portnum;
 	int  serverSock;
 	int serverPortnum;
@@ -49,13 +51,20 @@ void HandelTCPClient(int clientSock){
 	char sendbuffer[RCVBUFSIZE];
 	int recvMsgSize;
 
+time_t rawtime;
+struct tm * timeinfo;
+
+time (&rawtime);
+timeinfo = localtime(&rawtime);
+
 	/*Receive message from client*/
 	if((recvMsgSize = recv(clientSock,rcvbuffer,RCVBUFSIZE,0)< 0 )){
 		perror("recv failed");
 	}
 
 	printf("received from client: ");
-	puts(rcvbuffer);	
+	puts(rcvbuffer);
+	printf("Data logged time: %s", asctime(timeinfo));	
 	printf("\n");
 	////do something-----------------
 
