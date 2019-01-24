@@ -1,0 +1,9 @@
+Add the Sensor IDs and Type for  all Sensors that are on the Network.
+Sensor Ids must be 6 digits long.
+ID     Type
+123456 RandomSensor
+122222 RanHJ
+122422 RanHJLL
+111401 TempAndHumidityz
+111001 TempAndHumidity
+111051 TempAndHumidity
