@@ -11,14 +11,18 @@
 #include <time.h>
 
 #define MAXPENDING 5 /*Maximum outstanding connection requests most systems max is 20 (use 5 to 10)*/
-#define RCVBUFSIZE 64 /*size of receive Buffer*/
+#define RCVBUFSIZE 200 /*size of receive Buffer*/
 
 struct addrinfo hints, *infoptr;
 
 int CreateTCPServerSocket(int,char *argv[]);
 int AcceptTCPConnection(int);
 void HandelTCPClient(int );
+int ClientMessageProcess(char rcvstring[],char timestamp[]);
+int CheckSensor(char SensorID[]);
+int LogData(char SensorID[], char rcvstring[], char timestamp[]);
 
+/*----------Start: Main----------*/
 int main(int argc, char *argv[]){
 
 	int portnum;
@@ -45,40 +49,10 @@ int main(int argc, char *argv[]){
 	return 0;
 
 }
-
-void HandelTCPClient(int clientSock){
-	char rcvbuffer[RCVBUFSIZE];
-	char sendbuffer[RCVBUFSIZE];
-	int recvMsgSize;
-
-time_t rawtime;
-struct tm * timeinfo;
-
-time (&rawtime);
-timeinfo = localtime(&rawtime);
-
-	/*Receive message from client*/
-	if((recvMsgSize = recv(clientSock,rcvbuffer,RCVBUFSIZE,0)< 0 )){
-		perror("recv failed");
-	}
-
-	printf("received from client: ");
-	puts(rcvbuffer);
-	printf("Data logged time: %s", asctime(timeinfo));	
-	printf("\n");
-	////do something-----------------
+/*----------End: Main----------*/
 
 
-	if(send(clientSock,"HelloWorld",10,0)<0){
-		perror("send failed");
-
-	}
-
-
-	close(clientSock);
-}
-
-
+/*----------Start: AcceptTCPConnection----------*/
 int AcceptTCPConnection(int serverSock){
 	int clientid;
 
@@ -94,12 +68,11 @@ int AcceptTCPConnection(int serverSock){
 	printf("Handling client: %s\n", inet_ntoa(clientAddr.sin_addr));
 	return clientid;
 }
+/*----------End: AcceptTCPConnection----------*/
 
 
 
-
-
-
+/*----------Start: CreateTCPServerSocket----------*/
 int CreateTCPServerSocket(int portnum,char *argv[]){
 
 	int result;
@@ -213,5 +186,196 @@ int CreateTCPServerSocket(int portnum,char *argv[]){
 
 	return sockid;
 }
+/*----------End: CreateTCPServerSocket----------*/
+
+
+
+
+
+
+
+
+
+
+/*----------Start: HandleTCPClient----------*/
+void HandelTCPClient(int clientSock){
+	char rcvbuffer[RCVBUFSIZE];
+	char sendbuffer[RCVBUFSIZE];
+	int recvMsgSize;
+	int recvMsgLength;
+	int ErrorCode= -1;
+	memset(rcvbuffer, '\0',RCVBUFSIZE);
+
+	char timestamp[50];
+	time_t rawtime;
+	struct tm * timeinfo;
+
+	time (&rawtime);
+	timeinfo = localtime(&rawtime);
+
+	/*Receive message from client*/
+	if((recvMsgSize = recv(clientSock,rcvbuffer,RCVBUFSIZE,0)< 0 )){
+		perror("recv failed");
+	}
+
+	printf("received from client: ");
+	puts(rcvbuffer);
+	recvMsgLength= strlen(rcvbuffer);
+
+	if(recvMsgLength > 7){//possible good message
+		printf("Message length: %d\n", recvMsgLength);	
+		printf("Data logged time: %s", asctime_r(timeinfo, timestamp));	
+		printf("\n");
+		ErrorCode=ClientMessageProcess(rcvbuffer,timestamp);
+	}else{
+		if(send(clientSock,"Bad Message",11,0)<0){
+			perror("send failed");
+		}
+	}
+
+
+
+	//ErrorCode= ClientMessageProcess(rcvbuffer);
+
+	switch(ErrorCode){
+
+		case 0:
+			printf("Datalogged\n");
+			if(send(clientSock,"Data Logged",11,0)<0){
+				perror("send failed");
+			}
+			break;
+		case 2:
+			printf("File Error: ListSensors.txt\n");
+			if(send(clientSock,"File Error",10,0)<0){
+				perror("send failed");
+			}		
+			break;
+
+		case 3://unknown ID
+			printf("Error Unknow ID\n");
+			if(send(clientSock,"Error Unknown ID",16,0)<0){
+				perror("send failed");
+			}
+			break;
+		case 4:
+			printf("File Error: ListSensors.txt\n");
+			if(send(clientSock,"File Error",10,0)<0){
+				perror("send failed");
+			}		
+			break;
+
+	}
+
+
+
+	////do something-----------------
+
+
+
+	close(clientSock);
+}
+/*----------End: HandleTCPClient----------*/
+
+
+
+
+
+
+
+
+int ClientMessageProcess(char rcvstring[],char timestamp[]){
+
+	char SensorId[7];//six numbers plus null char
+	int c=0;
+	int ErrorNum=0;	
+
+	while(c<6){
+		SensorId[c]=rcvstring[c];
+		c++;
+	}
+
+	printf("Sensor ID is:%s\n",SensorId);
+
+	ErrorNum=CheckSensor(SensorId);
+
+	if(ErrorNum == 0){
+		//write to file
+		printf("Writeing to file\n");
+		ErrorNum=LogData(SensorId,rcvstring,timestamp);
+		return 0;
+	}else{
+		return ErrorNum;
+	}	
+
+
+
+
+}
+
+
+//Check to see if Valid sensor ID ( file: ListOfSensors.txt)
+int CheckSensor(char SensorID[]){
+
+	char ValidSensorID[12];
+	char SensorName[32];
+	FILE *fptr;
+	printf("HERE\n");
+
+	if(( fptr = fopen("./SensorFiles/ListOfSensors.txt","r"))==NULL){
+		printf("Erroe! opening  ListOfSensors File\n");//List of Sensors is all the sensors in the network
+		fclose(fptr);
+		return 2;//file failed to open
+	}
+	printf("HERE1\n");
+
+	fscanf(fptr,"%*[^\n]\n");//skip line 1 of file
+	fscanf(fptr,"%*[^\n]\n");//skip line 2 of file
+	fscanf(fptr,"%*[^\n]\n");//skip line  of file
+
+	printf("HERE2\n");
+	while(fscanf(fptr,"%s %s",ValidSensorID,SensorName)!= EOF){
+
+		//			printf("Sensor found in ListOfSensors: ValidSensor:%s, SensorID:%s, SensorName:%s\n",ValidSensorID,SensorID,SensorName);
+		if(strcmp(SensorID,ValidSensorID)==0){
+			printf("Passed Sensor found in ListOfSensors: ValidSensor:%s, SensorID:%s, SensorName:%s\n",ValidSensorID,SensorID,SensorName);
+			fclose(fptr);
+			return 0;//Sensor ID is in file
+		}
+
+	}	
+	//look at fseek
+
+	fclose(fptr);
+	return 3;//Sensor ID not infile
+
+}
+
+int LogData(char SensorID[], char rcvstring[], char timestamp[]){
+
+	printf("HEREx\n");
+	char filename[60];
+	FILE *lfptr;
+
+	sprintf(filename,"./SensorFiles/Sensor%s/SensorData%s.csv",SensorID,SensorID);
+	printf("Filename: %s\n",filename);
+	if(( lfptr = fopen(filename,"a"))==NULL){
+		printf("Error! opening  Log file File\n");//List of Sensors is all the sensors in the network
+		fclose(lfptr);
+		return 4;//file failed to open
+	}
+
+	printf("HEREy\n");
+	fprintf(lfptr,"%s,%s",rcvstring,timestamp);
+
+	printf("HEREz\n");
+	fclose(lfptr);
+
+	printf("HEREzz\n");
+	return 0;
+}
+
+
+
 
 
