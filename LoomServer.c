@@ -18,6 +18,7 @@ struct addrinfo hints, *infoptr;
 int CreateTCPServerSocket(int,char *argv[]);
 int AcceptTCPConnection(int);
 void HandelTCPClient(int );
+void *get_in_addr(struct sockaddr *sa);
 int ClientMessageProcess(char rcvstring[],char timestamp[]);
 int CheckSensor(char SensorID[]);
 int LogData(char SensorID[], char rcvstring[], char timestamp[]);
@@ -42,8 +43,10 @@ int main(int argc, char *argv[]){
 
 	//Runforever
 	while(1){
+	printf("\n\n------------------------------\n");
 		clientSock = AcceptTCPConnection(serverSock);
 		HandelTCPClient(clientSock);
+	printf("------------------------------\n");
 	}
 
 	return 0;
@@ -57,16 +60,33 @@ int AcceptTCPConnection(int serverSock){
 	int clientid;
 
 	struct sockaddr_in clientAddr;/*Client address*/
+	struct sockaddr_storage their_addr;//clients address info
+	char s[INET6_ADDRSTRLEN];
 
 	unsigned int clientLength;/*Length of the client address data structure*/
-	clientLength=sizeof(clientAddr);
 
-	if((clientid = accept(serverSock, (struct sockaddr *) &clientAddr,&clientLength)) < 0){
+	//clientLength=sizeof(clientAddr);
+	clientLength=sizeof(their_addr);
+
+	//if((clientid = accept(serverSock, (struct sockaddr *) &clientAddr,&clientLength)) < 0){
+	if((clientid = accept(serverSock, (struct sockaddr *) &their_addr,&clientLength)) < 0){
 		perror("accept failed\n");
 	}
 
-	printf("Handling client: %s\n", inet_ntoa(clientAddr.sin_addr));
+	inet_ntop(their_addr.ss_family, get_in_addr((struct sockaddr *)&their_addr),s, sizeof(s));
+	//printf("Handling client: %s\n", inet_ntoa(clientAddr.sin_addr));
+	printf("Handling client: %s\n", s);
 	return clientid;
+}
+
+void *get_in_addr(struct sockaddr *sa){
+
+	if(sa->sa_family ==AF_INET){
+		return &(((struct sockaddr_in*)sa)->sin_addr);
+	}
+
+	return &(((struct sockaddr_in6*)sa)->sin6_addr);
+
 }
 /*----------End: AcceptTCPConnection----------*/
 
@@ -218,7 +238,7 @@ void HandelTCPClient(int clientSock){
 		perror("recv failed");
 	}
 
-	printf("received from client: ");
+	printf("Message from client: ");
 	puts(rcvbuffer);
 	recvMsgLength= strlen(rcvbuffer);
 
@@ -320,25 +340,22 @@ int CheckSensor(char SensorID[]){
 	char ValidSensorID[12];
 	char SensorName[32];
 	FILE *fptr;
-	printf("HERE\n");
 
 	if(( fptr = fopen("./SensorFiles/ListOfSensors.txt","r"))==NULL){
 		printf("Erroe! opening  ListOfSensors File\n");//List of Sensors is all the sensors in the network
 		fclose(fptr);
 		return 2;//file failed to open
 	}
-	printf("HERE1\n");
 
 	fscanf(fptr,"%*[^\n]\n");//skip line 1 of file
 	fscanf(fptr,"%*[^\n]\n");//skip line 2 of file
 	fscanf(fptr,"%*[^\n]\n");//skip line  of file
 
-	printf("HERE2\n");
 	while(fscanf(fptr,"%s %s",ValidSensorID,SensorName)!= EOF){
 
 		//			printf("Sensor found in ListOfSensors: ValidSensor:%s, SensorID:%s, SensorName:%s\n",ValidSensorID,SensorID,SensorName);
 		if(strcmp(SensorID,ValidSensorID)==0){
-			printf("Passed Sensor found in ListOfSensors: ValidSensor:%s, SensorID:%s, SensorName:%s\n",ValidSensorID,SensorID,SensorName);
+			printf("Sensor found in ListOfSensors: ValidSensor:%s, SensorID:%s, SensorName:%s\n",ValidSensorID,SensorID,SensorName);
 			fclose(fptr);
 			return 0;//Sensor ID is in file
 		}
@@ -346,6 +363,7 @@ int CheckSensor(char SensorID[]){
 	}	
 	//look at fseek
 
+			printf("Sensor NOT found in ListOfSensors.\n");
 	fclose(fptr);
 	return 3;//Sensor ID not infile
 
@@ -353,7 +371,6 @@ int CheckSensor(char SensorID[]){
 
 int LogData(char SensorID[], char rcvstring[], char timestamp[]){
 
-	printf("HEREx\n");
 	char filename[60];
 	FILE *lfptr;
 
@@ -365,13 +382,10 @@ int LogData(char SensorID[], char rcvstring[], char timestamp[]){
 		return 4;//file failed to open
 	}
 
-	printf("HEREy\n");
 	fprintf(lfptr,"%s,%s",rcvstring,timestamp);
 
-	printf("HEREz\n");
 	fclose(lfptr);
 
-	printf("HEREzz\n");
 	return 0;
 }
 
