@@ -22,6 +22,7 @@ void *get_in_addr(struct sockaddr *sa);
 int ClientMessageProcess(char rcvstring[],char timestamp[]);
 int CheckSensor(char SensorID[]);
 int LogData(char SensorID[], char rcvstring[], char timestamp[]);
+int getConfig(char SensorID[]);
 
 /*----------Start: Main----------*/
 int main(int argc, char *argv[]){
@@ -229,6 +230,8 @@ void HandelTCPClient(int clientSock){
 	char timestamp[50];
 	time_t rawtime;
 	struct tm * timeinfo;
+	char SensorId[7];//six numbers plus null char
+	int c=0;
 
 	time (&rawtime);
 	timeinfo = localtime(&rawtime);
@@ -261,7 +264,13 @@ void HandelTCPClient(int clientSock){
 
 		case 0:
 			printf("Datalogged\n");
-			if(send(clientSock,"Data Logged",11,0)<0){
+
+			while(c<6){
+				SensorId[c]=rcvbuffer[c];
+				c++;
+			}
+			sprintf(sendbuffer,"Datalogged,%d",getConfig(SensorId));
+			if(send(clientSock,sendbuffer,strlen(sendbuffer),0)<0){
 				perror("send failed");
 			}
 			break;
@@ -279,7 +288,7 @@ void HandelTCPClient(int clientSock){
 			}
 			break;
 		case 4:
-			printf("File Error: ListSensors.txt\n");
+			printf("File Error: Log File\n");
 			if(send(clientSock,"File Error",10,0)<0){
 				perror("send failed");
 			}		
@@ -363,7 +372,7 @@ int CheckSensor(char SensorID[]){
 	}	
 	//look at fseek
 
-			printf("Sensor NOT found in ListOfSensors.\n");
+	printf("Sensor NOT found in ListOfSensors.\n");
 	fclose(fptr);
 	return 3;//Sensor ID not infile
 
@@ -391,5 +400,30 @@ int LogData(char SensorID[], char rcvstring[], char timestamp[]){
 
 
 
+int getConfig(char SensorID[]){
+
+	char filename[60];
+	FILE *cfptr;
+	char ConfigVal[12];
+
+	sprintf(filename,"./SensorFiles/Sensor%s/Config%s.txt",SensorID,SensorID);
+	printf("Filename: %s\n",filename);
+
+	if(( cfptr = fopen(filename,"r"))==NULL){
+		printf("Erroe! opening  ListOfSensors File\n");//List of Sensors is all the sensors in the network
+		fclose(cfptr);
+		return -1;//file failed to open
+	}
+
+	fscanf(cfptr,"%*[^\n]\n");//skip line 1 of file
+	fscanf(cfptr,"%*[^\n]\n");//skip line 2 of file
+
+	fscanf(cfptr,"%s",ConfigVal);
+
+	fclose(cfptr);
+
+	return atoi(ConfigVal);
+
+}
 
 
