@@ -11,7 +11,7 @@
 #include <time.h>
 
 #define MAXPENDING 5 /*Maximum outstanding connection requests most systems max is 20 (use 5 to 10)*/
-#define RCVBUFSIZE 200 /*size of receive Buffer*/
+#define RCVBUFSIZE 250 /*size of receive Buffer*/
 
 struct addrinfo hints, *infoptr;
 

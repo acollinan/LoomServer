@@ -6,4 +6,4 @@ ID     Type
 122422 RanHJLL
 111401 TempAndHumidityz
 111001 TempAndHumidity
-111051 TempAndHumidity
+111002 NodeMCU
