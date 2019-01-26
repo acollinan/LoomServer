@@ -244,7 +244,8 @@ void HandelTCPClient(int clientSock){
 	printf("Message from client: ");
 	puts(rcvbuffer);
 	recvMsgLength= strlen(rcvbuffer);
-
+	printf("Message Byte Length:%d characters",recvMsgLength);
+	printf("Message, Amount of memory allocated: %zu bytes\n",sizeof(recvMsgLength));
 	if(recvMsgLength > 7){//possible good message
 		printf("Message length: %d\n", recvMsgLength);	
 		printf("Data logged time: %s", asctime_r(timeinfo, timestamp));	
@@ -391,6 +392,12 @@ int LogData(char SensorID[], char rcvstring[], char timestamp[]){
 		return 4;//file failed to open
 	}
 
+char LogMsg[300];
+int LogMsglength=0;
+	sprintf(LogMsg,"%s,%s",rcvstring,timestamp);
+	printf("\n String being Logged:%s\n",LogMsg);
+	printf("String Byte Length:%d characters\n",LogMsglength);
+	printf("String, Amount of memory allocated: %zu bytes\n",sizeof(LogMsg));
 	fprintf(lfptr,"%s,%s",rcvstring,timestamp);
 
 	fclose(lfptr);
