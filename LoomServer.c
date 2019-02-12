@@ -413,7 +413,7 @@ int getConfig(char SensorID[]){
 	FILE *cfptr;
 	char ConfigVal[12];
 
-	sprintf(filename,"./SensorFiles/Sensor%s/Config%s.txt",SensorID,SensorID);
+	sprintf(filename,"./SensorFiles/Sensor%s/SensorConfig%s.txt",SensorID,SensorID);
 	printf("Filename: %s\n",filename);
 
 	if(( cfptr = fopen(filename,"r"))==NULL){

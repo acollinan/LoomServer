@@ -1,2 +1,4 @@
 bin/
-*.sh
+**.txt
+**.csv
+**.DS_Store
