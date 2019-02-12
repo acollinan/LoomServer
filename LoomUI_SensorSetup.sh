@@ -59,8 +59,6 @@ case $sensornum in
 	;;
 esac
 
-
-
 }
 
 remove_sensor(){
