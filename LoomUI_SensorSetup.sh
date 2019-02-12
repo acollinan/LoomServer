@@ -2,14 +2,65 @@
 
 #give program permision initially "chmod +x LoomUI_Setup.sh"
 
-checkLISTofSensors(){
 
-while [ test $ = $(cat -e $SensorList | tail -n 1) ]#check if last line in file in newline
+
+CreateSensorData_File(){
+
+echo
+echo Creating sensor Data file SensorData$3.csv for $1 $2 Id: $3
+#check if file already exists
+ echo This is the Data file for the $1 $2 ID : $3  > "./Sensors/$4/SensorData$3.csv"
+#push colum headers to file
+
+}
+
+CreateSensorConfig_File(){
+
+echo
+echo Creating sensor config file SensorConfig$3.txt for $1 $2 Id: $3
+#check if file already exists
+ echo This is the configuration file for the $1 $2 ID : $3  > "./Sensors/$4/SensorConfig$3.txt"
+#push colum headers to file
+
+
+}
+
+CreateSensor_directory(){
+
+#check if directory already exists
+echo
+echo Creating directory Sensor$3 for $1 $2 Id: $3
+mkdir "./SensorFiles/Sensor$3"
+
+CreateSensorConfig_File $1 $2 $3 "Sensor$3" 
+CreateSensordata_File $1 $2 $3 "Sensor$3" 
+}
+
+AddtoLISTofSensors(){
+
+SensorList=./SensorFiles/ListOfSensors.txt
+echo $SensorList
+
+echo In list sensors
+cat $SensorList
+#cat ./SensorFiles/ListOfSensors.txt
+cat -e $SensorList | tail -n 1 #check if last line in file in newline
+
+while [ $(test $ = $(cat -e $SensorList | tail -n 1)) ; echo $? ] #check if last line in file in newline
 do
-sed '$d' $SensorList
+sed -i '' -e '$ d' $SensorList
 done
 
+MaxSensorNum=$(tail -n 1 $Sensorlist | cut -d ' ' -f 1)
+echo MaxSensorNum: $MaxSensorNum
 
+#do check before assignment
+
+NewSensorNum=$($MaxSensorNum+1)
+echo NewSensorNum: $MaxSensorNum
+echo $NewSensorNum $1 $2 $(date) >> $Sensorlist
+
+CreateSensor_directory $1 $2 $NewSensorNum
 }
 
 #adding sensor function:
@@ -32,18 +83,19 @@ read -p 'Enter the sensor number: ' sensornum
 case $sensornum in 
 	0)
 	echo Adding Salinity sensor
+	AddtoLISTofSensors Salinity sensor
 	;;
 	1)
 	echo Adding PH Sensor
-	if[ test $ = $(cat -e $SensorList | tail -n 1) ]
+	AddtoLISTofSensors PH sensor
 	;;
 	2)
 	echo Adding Hall Effect Sensor
-	if[ test $ = $(cat -e $SensorList | tail -n 1) ]
+	AddtoLISTofSensors PH sensor
 	;;
 	3)
 	echo Adding Flow Meter
-	if[ test $ = $(cat -e $SensorList | tail -n 1) ]	
+	AddtoLISTofSensors Flow Sensor
 	;;
 	q)
 	echo Quitting
@@ -64,7 +116,6 @@ remove_sensor(){
 echo returning sensor
 }
 
-SensorList=ListOfSensors.txt
 
 
 while :
