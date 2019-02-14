@@ -8,6 +8,3 @@ ID     Type
 111001 TempAndHumidity
 111002 Accelerometers
 111003 PH
-
-
-
