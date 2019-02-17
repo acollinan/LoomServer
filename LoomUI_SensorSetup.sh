@@ -3,21 +3,114 @@
 #give program permision initially "chmod +x LoomUI_Setup.sh"
 
 
+CreateSensorsrc_Dir(){
+
+#$1=sensor Type  $2=Sensor  $3=Sensor ID $4=Sensor Dire name 
+	
+#Edit code below to add new sensor, follow format below
+case $1 in 
+	Salinity)
+	echo Creating sensor source directory ./SensorFiles/$4/ClientSalinitySensor$3 for $1 $2 Id: $3
+	mkdir "./SensorFiles/$4/ClientSalinitySensor$3"
+	echo Copying Salinity Sensor source code
+	echo No source file for salinity sensor yet
+	#cp ./src/Sensor_src/ClientSalinitySensor.ino "./SensorFiles/$4/ClientSalinitySensor$3/ClientSalinitySensor$3.ino" 
+	;;
+	PH)
+	echo Creating sensor source directory ./SensorFiles/$4/ClientPHSensor$3 for $1 $2 Id: $3
+	mkdir "./SensorFiles/$4/ClientPHSensor$3"
+	echo Copying PH Sensor source code
+	echo No source file for PH sensor yet
+	#cp ./src/Sensor_src/ClientPHSensor.ino "./SensorFiles/$4/ClientPHSensor$3/ClientPHSensor$3.ino" 
+	;;
+	Hall-Effect)
+	echo Creating sensor source directory ./SensorFiles/$4/ClientHall-EffectSensor$3 for $1 $2 Id: $3
+	mkdir "./SensorFiles/$4/ClientHall-EffectSensor$3"
+	echo Copying Hall-Effect Sensor source code
+	echo No source file for Hall-Effect sensor yet
+	#cp ./src/Sensor_src/ClientHall-EffectSensor.ino "./SensorFiles/$4/ClientHall-EffectSensor$3/ClientHall-EffectSensor$3.ino" 
+	;;
+	Flow)
+	echo Creating sensor source directory ./SensorFiles/$4/ClientFlowSensor$3 for $1 $2 Id: $3
+	mkdir "./SensorFiles/$4/ClientFlowSensor$3"
+	echo Copying Flow Sensor source code
+	echo No source file for Flow sensor yet
+	#cp ./src/Sensor_src/ClientFlowSensor.ino "./SensorFiles/$4/ClientFlowSensor$3/ClientFlowSensor$3.ino" 
+	;;
+	Temperature)
+	echo Creating sensor source directory ./SensorFiles/$4/ClientTemperatureSensor$3 for $1 $2 Id: $3
+	mkdir "./SensorFiles/$4/ClientTemperatureSensor$3"
+	echo Copying Temperature Sensor source code
+	cp ./src/Sensor_src/ClientTemperatureSensor.ino "./SensorFiles/$4/ClientTemperatureSensor$3/ClientTemperatureSensor$3.ino" 
+	;;
+	*)
+	echo invalid sensor input source section
+	;;
+esac
+
+
+}
+
 
 CreateSensorData_File(){
 
-echo Creating sensor Data file ./$4/SensorData$3.csv for $1 $2 Id: $3
+#$1=sensor Type  $2=Sensor  $3=Sensor ID $4=Sensor Dire name 
+echo Creating sensor Data file .SensorFiles/$4/SensorData$3.csv for $1 $2 Id: $3
 #check if file already exists
 echo This is the Data file for the $1 $2 ID : $3  > "./SensorFiles/$4/SensorData$3.csv"
 #cat ./SensorFiles/$4/SensorData$3.csv
 
 #push colum headers to file
 
+#Edit code below to add new sensor, follow format below
+case $1 in 
+	Salinity)
+	echo Creating sensor source directory ./SensorFiles/$4/ClientSalinitySensor$3 for $1 $2 Id: $3
+	mkdir "./SensorFiles/$4/ClientSalinitySensor$3"
+	echo Copying Salinity Sensor source code
+	echo No source file for salinity sensor yet
+	#cp ./src/Sensor_src/ClientSalinitySensor.ino "./SensorFiles/$4/ClientSalinitySensor$3/ClientSalinitySensor$3.ino" 
+	;;
+	PH)
+	echo Creating sensor source directory ./SensorFiles/$4/ClientPHSensor$3 for $1 $2 Id: $3
+	mkdir "./SensorFiles/$4/ClientPHSensor$3"
+	echo Copying PH Sensor source code
+	echo No source file for PH sensor yet
+	#cp ./src/Sensor_src/ClientPHSensor.ino "./SensorFiles/$4/ClientPHSensor$3/ClientPHSensor$3.ino" 
+	;;
+	Hall-Effect)
+	echo Creating sensor source directory ./SensorFiles/$4/ClientHall-EffectSensor$3 for $1 $2 Id: $3
+	mkdir "./SensorFiles/$4/ClientHall-EffectSensor$3"
+	echo Copying Hall-Effect Sensor source code
+	echo No source file for Hall-Effect sensor yet
+	#cp ./src/Sensor_src/ClientHall-EffectSensor.ino "./SensorFiles/$4/ClientHall-EffectSensor$3/ClientHall-EffectSensor$3.ino" 
+	;;
+	Flow)
+	echo Creating sensor source directory ./SensorFiles/$4/ClientFlowSensor$3 for $1 $2 Id: $3
+	mkdir "./SensorFiles/$4/ClientFlowSensor$3"
+	echo Copying Flow Sensor source code
+	echo No source file for Flow sensor yet
+	#cp ./src/Sensor_src/ClientFlowSensor.ino "./SensorFiles/$4/ClientFlowSensor$3/ClientFlowSensor$3.ino" 
+	;;
+	Temperature)
+	echo Creating sensor source directory ./SensorFiles/$4/ClientTemperatureSensor$3 for $1 $2 Id: $3
+	mkdir "./SensorFiles/$4/ClientTemperatureSensor$3"
+	echo Copying Temperature Sensor source code
+	cp ./src/Sensor_src/ClientTemperatureSensor.ino "./SensorFiles/$4/ClientTemperatureSensor$3/ClientTemperatureSensor$3.ino" 
+	;;
+	*)
+	echo invalid sensor input source section
+	;;
+esac
+
+
+#-------------------------
 }
 
 CreateSensorConfig_File(){
 
-echo Creating sensor config file ./$4/SensorConfig$3.txt for $1 $2 Id: $3
+#$1=sensor Type  $2=Sensor  $3=Sensor ID $4=Sensor Dire name 
+echo Creating sensor config file ./SensorFiles/$4/SensorConfig$3.txt for $1 $2 Id: $3
 #check if file already exists
 echo This is the configuration file for the $1 $2 ID : $3  > "./SensorFiles/$4/SensorConfig$3.txt"
 #cat ./SensorFiles/$4/SensorConfig$3.txt
@@ -33,11 +126,13 @@ echo Creating directory Sensor$3 for $1 $2 Id: $3
 mkdir "./SensorFiles/Sensor$3"
 
 
+#$1=sensor Type  $2=Sensor  $3=Sensor ID  
 CreateSensorConfig_File $1 $2 $3 "Sensor$3" 
 CreateSensorData_File $1 $2 $3 "Sensor$3" 
+CreateSensorsrc_Dir  $1 $2 $3 "Sensor$3"
 echo
 echo Directory Tree
-find SensorFiles -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'
+find ./SensorFiles -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'
 echo
 }
 
@@ -68,7 +163,7 @@ NewSensorNum=$(($MaxSensorNum + 1))
 #echo $NewSensorNum $1 $2 $(date) 
 echo $NewSensorNum $1 $2 $(date) >> $SensorList
 
-
+#$1=sensor Type  $2=Sensor
 CreateSensor_directory $1 $2 $NewSensorNum
 }
 
@@ -87,6 +182,7 @@ echo 0-Salinity sensor
 echo 1-PH Sensor
 echo 2-Hall-Effect Sensor
 echo 3-Flow Sensor
+echo 4-Temperature Sensor
 echo Enter q to quit.
 	
 
@@ -115,6 +211,11 @@ case $sensornum in
 	AddtoLISTofSensors Flow Sensor
 	break
 	;;
+	4)
+	echo Adding Temperature Sensor
+	AddtoLISTofSensors Temperature Sensor
+	break
+	;;
 	q)
 	echo Quitting
 	exit 0
@@ -124,6 +225,8 @@ case $sensornum in
 	echo invalid input
 	;;
 esac
+
+
 done
 
 }

@@ -2,6 +2,3 @@ Add the Sensor IDs and Type for  all Sensors that are on the Network.
 Sensor Ids must be 6 digits long.
 ID     Type
 111000 Example Type Do not Delete this line
-111001 Salinity Sensor Thu Feb 14 01:50:53 PST 2019
-111002 PH Sensor Thu Feb 14 01:51:02 PST 2019
-111003 Flow Sensor Thu Feb 14 01:51:12 PST 2019
