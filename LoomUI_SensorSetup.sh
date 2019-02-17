@@ -3,6 +3,93 @@
 #give program permision initially "chmod +x LoomUI_Setup.sh"
 
 
+ConfigureSensorSketchFile(){ 
+#$1=sensor Type  $2=Sensor  $3=Sensor ID $4=Sensor Dire name $5=sensor sketch dir name $6=sensor sketck file name 
+clear
+echo Time to create arduino sketch file.
+while :
+do
+read -p 'Enter network name(SSID): ' ssid
+read -p 'Enter network password: ' password
+echo
+read -p 'Enter Server IP: ' serverip
+read -p 'Enter Server listening port: ' serverport
+
+while :
+do
+read -p 'Enter data logging interval in minutes ( whole between 0 - 1441): ' loginterval
+case $loginterval in
+	*[!0-9*] | "")
+	echo Invalid input.
+	continue
+	;;
+	*)
+		if [ "$loginterval" -gt "0" ] && [ "$loginterval" -lt "1441" ]
+		then
+		echo Good value
+		break
+	fi
+	;;
+esac
+
+echo Invalid input
+done
+
+
+clear
+echo You entered:
+echo Network Name \(ssid\): $ssid
+echo Password: $password
+echo Server IP: $serverip
+echo Server port: $serverport
+echo Data logging interval: $loginterval
+read -p 'Are the previous values correct (y or n)? ' answer
+if [ "$answer" = "y" ]
+then
+	break
+elif [ "$answer" = "n" ] 
+then
+	continue
+else
+	echo Invalid input.
+fi
+done
+
+subpath="./SensorFiles/$4/$5/$6"
+#Time to write to files
+#char ssid[]=SECRET_SSID;//your network SSID (name)
+#char pass[]=SECRET_PASS;//your network password (use for WPA, or use a key for WEP)
+#String DeviceID ="111001";
+#const char * host = "192.168.1.133";//ip on which server is running
+#const uint16_t port = 8090;
+
+#follow sed commands on work for BSD version of sed
+sed -i '' "11a\\
+#define SECRET_PASS \"$password\"
+" $subpath
+
+sed -i '' "11a\\
+#define SECRET_SSID \"$ssid\"
+" $subpath
+
+sed -i '' "11a\\
+#define LOG_INTERVAL $loginterval
+" $subpath
+
+sed -i '' "11a\\
+#define PORT $serverport
+" $subpath 
+
+sed -i '' "11a\\
+#define IP_ADDR \"$serverip\"
+" $subpath
+
+
+sed -i '' "11a\\
+#define DEVICE_ID \"$3\"
+" $subpath
+}
+
 CreateSensorsrc_Dir(){
 
 #$1=sensor Type  $2=Sensor  $3=Sensor ID $4=Sensor Dire name 
@@ -42,6 +129,7 @@ case $1 in
 	mkdir "./SensorFiles/$4/ClientTemperatureSensor$3"
 	echo Copying Temperature Sensor source code
 	cp ./src/Sensor_src/ClientTemperatureSensor.ino "./SensorFiles/$4/ClientTemperatureSensor$3/ClientTemperatureSensor$3.ino" 
+	ConfigureSensorSketchFile $1 $2 $3 $4 "ClientTemperatureSensor$3" "ClientTemperatureSensor$3.ino"   	
 	;;
 	*)
 	echo invalid sensor input source section
@@ -65,38 +153,20 @@ echo This is the Data file for the $1 $2 ID : $3  > "./SensorFiles/$4/SensorData
 #Edit code below to add new sensor, follow format below
 case $1 in 
 	Salinity)
-	echo Creating sensor source directory ./SensorFiles/$4/ClientSalinitySensor$3 for $1 $2 Id: $3
-	mkdir "./SensorFiles/$4/ClientSalinitySensor$3"
-	echo Copying Salinity Sensor source code
-	echo No source file for salinity sensor yet
-	#cp ./src/Sensor_src/ClientSalinitySensor.ino "./SensorFiles/$4/ClientSalinitySensor$3/ClientSalinitySensor$3.ino" 
+	echo Add Sensor column headers
 	;;
 	PH)
-	echo Creating sensor source directory ./SensorFiles/$4/ClientPHSensor$3 for $1 $2 Id: $3
-	mkdir "./SensorFiles/$4/ClientPHSensor$3"
-	echo Copying PH Sensor source code
-	echo No source file for PH sensor yet
-	#cp ./src/Sensor_src/ClientPHSensor.ino "./SensorFiles/$4/ClientPHSensor$3/ClientPHSensor$3.ino" 
+	echo Add Sensor column headers
 	;;
 	Hall-Effect)
-	echo Creating sensor source directory ./SensorFiles/$4/ClientHall-EffectSensor$3 for $1 $2 Id: $3
-	mkdir "./SensorFiles/$4/ClientHall-EffectSensor$3"
-	echo Copying Hall-Effect Sensor source code
-	echo No source file for Hall-Effect sensor yet
-	#cp ./src/Sensor_src/ClientHall-EffectSensor.ino "./SensorFiles/$4/ClientHall-EffectSensor$3/ClientHall-EffectSensor$3.ino" 
+	echo Add Sensor column headers
 	;;
 	Flow)
-	echo Creating sensor source directory ./SensorFiles/$4/ClientFlowSensor$3 for $1 $2 Id: $3
-	mkdir "./SensorFiles/$4/ClientFlowSensor$3"
-	echo Copying Flow Sensor source code
-	echo No source file for Flow sensor yet
-	#cp ./src/Sensor_src/ClientFlowSensor.ino "./SensorFiles/$4/ClientFlowSensor$3/ClientFlowSensor$3.ino" 
+	echo Add Sensor column headers
 	;;
 	Temperature)
-	echo Creating sensor source directory ./SensorFiles/$4/ClientTemperatureSensor$3 for $1 $2 Id: $3
-	mkdir "./SensorFiles/$4/ClientTemperatureSensor$3"
-	echo Copying Temperature Sensor source code
-	cp ./src/Sensor_src/ClientTemperatureSensor.ino "./SensorFiles/$4/ClientTemperatureSensor$3/ClientTemperatureSensor$3.ino" 
+	echo Add Sensor column headers
+	echo DeviceID,Humidity,Temperature C,Temperature F,Time Stamp >> "./SensorFiles/$4/SensorData$3.csv"
 	;;
 	*)
 	echo invalid sensor input source section
