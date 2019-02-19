@@ -296,9 +296,7 @@ case $sensornum in
 	;;
 esac
 
-
 done
-
 }
 
 
@@ -345,6 +343,14 @@ fi
 }
 
 
+change_dataloginterval(){
+cat ./SensorFiles/ListOfSensors.txt
+echo Enter q to quit.
+read -p 'From list of sensors above, enter sensor ID of sensor to configure: ' sensor_id
+
+
+
+}
 
 while :
 do
@@ -352,6 +358,7 @@ echo
 echo Tasks:
 echo 0-add sensor
 echo 1-remove sensor
+echo 2-change sensor data logging interval
 echo Enter q to quit.
 
 read -p 'Enter the number for Task: ' userin
@@ -367,6 +374,10 @@ elif [ "$userin" = "1" ]
 then
 	echo remove sensor
 	remove_sensor
+elif [ "$userin" = "q" ]
+then
+	echo change sensor data logging interval
+	change_dataloginterval
 elif [ "$userin" = "q" ]
 then
 	echo quit
