@@ -63,6 +63,7 @@ subpath="./SensorFiles/$4/$5/$6"
 #const char * host = "192.168.1.133";//ip on which server is running
 #const uint16_t port = 8090;
 
+echo "$loginterval" >> "./SensorFiles/$4/SensorConfig$3.txt"
 #follow sed commands on work for BSD version of sed
 sed -i '' "11a\\
 #define SECRET_PASS \"$password\"
@@ -231,7 +232,8 @@ NewSensorNum=$(($MaxSensorNum + 1))
 #echo NewSensorNum: $NewSensorNum
 
 #echo $NewSensorNum $1 $2 $(date) 
-echo $NewSensorNum $1 $2 $(date) >> $SensorList
+#echo $NewSensorNum $1$2 $(date) >> $SensorList
+echo $NewSensorNum $1$2  >> $SensorList
 
 #$1=sensor Type  $2=Sensor
 CreateSensor_directory $1 $2 $NewSensorNum
@@ -348,7 +350,54 @@ cat ./SensorFiles/ListOfSensors.txt
 echo Enter q to quit.
 read -p 'From list of sensors above, enter sensor ID of sensor to configure: ' sensor_id
 
+if [ "$sensor_id" = "q" ]
+then
+	echo quiting
+	clear
+	exit 0 
+fi
 
+
+if [ "$sensor_id" = "111000" ]
+then
+	echo This is not a sensor that can be deleted.
+elif [ -d "./SensorFiles/Sensor$sensor_id" ] && [ -w "./SensorFiles/Sensor$sensor_id/SensorConfig$sensor_id.txt" ]
+then
+	clear
+	echo -e "Current data loggin interval in file SensorConfig$sensor_id.txt: \c"
+	tail -n 1 ./SensorFiles/Sensor$sensor_id/SensorConfig$sensor_id.txt
+	echo
+
+	while :
+	do
+	echo "Enter q to quit."
+	read -p 'Enter New data logging interval in minutes ( whole between 0 - 1441): ' log_interval	
+	case $log_interval in
+		q)
+			break
+		;;
+		*[!0-9*] | "")
+		echo Invalid input.
+		continue
+		;;
+		*)
+			if [ "$log_interval" -gt "0" ] && [ "$log_interval" -lt "1441" ]
+			then
+			sed -i '' -e '$ d'  ./SensorFiles/Sensor$sensor_id/SensorConfig$sensor_id.txt
+			echo  $log_interval >>  ./SensorFiles/Sensor$sensor_id/SensorConfig$sensor_id.txt
+			echo Good value
+			break
+			else
+				echo Invalid input.
+			fi
+			
+		;;
+	esac
+	done
+		
+else
+	echo Error: Invalid Sensor id
+fi
 
 }
 
@@ -374,7 +423,7 @@ elif [ "$userin" = "1" ]
 then
 	echo remove sensor
 	remove_sensor
-elif [ "$userin" = "q" ]
+elif [ "$userin" = "2" ]
 then
 	echo change sensor data logging interval
 	change_dataloginterval

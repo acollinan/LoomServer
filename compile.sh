@@ -1,3 +1,3 @@
 #!/bin/bash
 
-gcc -o bin/run LoomServer.c
+gcc -o bin/runServer LoomServer.c

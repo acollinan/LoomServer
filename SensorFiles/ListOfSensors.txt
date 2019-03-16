@@ -1,5 +1,6 @@
 Add the Sensor IDs and Type for  all Sensors that are on the Network.
 Sensor Ids must be 6 digits long.
 ID     Type
-111000 Example Type Do not Delete this line
-111001 Temperature Sensor Sun Feb 17 06:57:09 PST 2019
+111000 ExampleOfasensor
+111001 TemperatureSensor
+111002 TemperatureSensor

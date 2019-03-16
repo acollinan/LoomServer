@@ -5,4 +5,4 @@ bin/
 **.ino
 !**ListOfSensors.txt
 !**ClientTemperatureSensor.ino
-
+**test.txt
