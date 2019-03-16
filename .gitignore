@@ -2,3 +2,8 @@ bin/
 **.txt
 **.csv
 **.DS_Store
+**.ino
+!**ListOfSensors.txt
+!**ClientTemperatureSensor.ino
+**test.txt
+**.ino

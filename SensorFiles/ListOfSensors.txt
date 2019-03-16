@@ -1,9 +1,15 @@
 Add the Sensor IDs and Type for  all Sensors that are on the Network.
 Sensor Ids must be 6 digits long.
 ID     Type
+<<<<<<< HEAD
 123456 RandomSensor
 122222 RanHJ
 122422 RanHJLL
 111401 TempAndHumidityz
 
 
+=======
+111000 ExampleOfasensor
+111001 TemperatureSensor
+111002 TemperatureSensor
+>>>>>>> UI
