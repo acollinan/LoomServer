@@ -5,7 +5,5 @@ ID     Type
 122222 RanHJ
 122422 RanHJLL
 111401 TempAndHumidityz
-111001 TempAndHumidity
-111002 Accelerometers
-111003 PH
+
 
